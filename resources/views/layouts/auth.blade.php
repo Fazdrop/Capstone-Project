@@ -8,7 +8,8 @@
   {{-- font Inter --}}
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 </head>
-<body class="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
+<body class="min-h-screen flex items-center justify-center bg-gray-200 font-sans">
+
 
   @yield('content')
 
