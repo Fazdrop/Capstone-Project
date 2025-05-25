@@ -8,50 +8,56 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    //
+    // Tampilkan form login, tapi kalau sudah login redirect ke dashboard
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            return match($user->role) {
+                'admin' => redirect()->route('admin.dashboard'),
+                'hrd'   => redirect()->route('hrd.dashboard'),
+                'ga'    => redirect()->route('ga.dashboard'),
+                'it'    => redirect()->route('it.dashboard'),
+                default => redirect()->route('user.dashboard'),
+            };
+        }
         return view('auth.login');
     }
 
+    // Proses login
     public function login(Request $request)
     {
-        //data yang dikirim dari form login
         $credentials = $request->validate([
             'email' =>['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
-        //melakukan autentikasi
-        if(Auth::attempt($credentials)){
-            //membuat session baru untuk user yang berhasil login
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            //redirect ke halaman dashboard atau halaman sesuai role masing masing
             $user = Auth::user();
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
-                'hrd' => redirect()->route('hrd.dashboard'),
-                'ga'=> redirect()->route('ga.dashboard'),
-                'it' => redirect()->route('it.dashboard'),
+                'hrd'   => redirect()->route('hrd.dashboard'),
+                'ga'    => redirect()->route('ga.dashboard'),
+                'it'    => redirect()->route('it.dashboard'),
                 default => redirect()->route('user.dashboard'),
             };
         }
 
-        //jika gagal login, kembali ke halaman login dengan pesan error
+        // Jika gagal login, tampilkan error dan kembalikan email
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Email atau Password yang diberikan salah.',
         ])->onlyInput('email');
     }
 
-    //logout
+    // Proses logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        //redirect ke halaman login
         return redirect()->route('login')->with('status', 'You have been logged out successfully.');
     }
 }
