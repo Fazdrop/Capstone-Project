@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('division');
-            $table->string('role');
+            //mengubah kolom 'division' menjadi foreign key yang mengacu pada tabel 'divisions'
+            // $table->string('division');
+            $table->foreignId('division_id')->constrained('divisions')->onDelete('cascade');
+            $table->string('role')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
