@@ -34,7 +34,7 @@
 
       <!-- Submit Button -->
       <button type="submit"
-              class="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition">
+              class="w-full bg-indigo-600 text-white font-medium py-2 rounded-md hover:bg-indigo-700 transition cursor-pointer">
         Sign In
       </button>
     </form>

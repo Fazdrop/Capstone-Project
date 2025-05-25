@@ -36,6 +36,21 @@
 
   let isExpanded = false;
 
+    // dropdown logout user navbar
+    document.addEventListener("DOMContentLoaded", function () {
+    const userBtn = document.getElementById("user-menu-button");
+    const dropdown = document.getElementById("user-dropdown");
+
+    userBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function () {
+      dropdown.classList.add("hidden");
+    });
+  });
+
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     isExpanded = !isExpanded;
