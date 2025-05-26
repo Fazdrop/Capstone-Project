@@ -9,6 +9,7 @@
         <h1 class="text-2xl font-bold mb-2 text-indigo-700 flex items-center gap-2">
             <i data-feather="edit"></i> Edit User
         </h1>
+        
         <p class="text-gray-500 mb-6">Ubah detail pengguna di bawah ini.</p>
         <form method="POST" action="{{ route('admin.users.update', $user->id) }}" class="space-y-5">
             @csrf

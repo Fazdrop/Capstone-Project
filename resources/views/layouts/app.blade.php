@@ -71,6 +71,16 @@
 
     feather.replace(); // refresh icons
   });
+
+  // Auto-hide any flash messages after 3s
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.flash-message').forEach(el => {
+        setTimeout(() => {
+          el.classList.add('opacity-0', 'transition', 'duration-500');
+          setTimeout(() => el.remove(), 500);
+        }, 3000);
+      });
+    });
 </script>
 
 

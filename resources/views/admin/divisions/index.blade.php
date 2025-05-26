@@ -21,7 +21,7 @@
     </div>
 
     @if(session('success'))
-        <div class="mb-4 text-green-700 bg-green-100 rounded px-4 py-2 border border-green-200 shadow-sm flex items-center gap-2">
+        <div class="flash-message mb-4 text-green-700 bg-green-100 rounded px-4 py-2 border border-green-200 shadow-sm flex items-center gap-2">
             <i data-feather="check-circle" class="w-5 h-5"></i>
             <span>{{ session('success') }}</span>
         </div>

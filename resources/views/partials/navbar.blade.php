@@ -20,15 +20,20 @@
       <i data-feather="user"></i>
       <span>{{ Auth::user()->name ?? 'User' }}</span>
     </button>
-    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-md z-50 transition duration-200 ease-out">
-      <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit"
-                class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 cursor-pointer">
-          Logout
-        </button>
-      </form>
-    </div>
+    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-md z-50 transition duration-200 ease-out">
+  <a href="{{ route('password.change') }}"
+     class="block px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 cursor-pointer border-b border-gray-200">
+    Ganti Password
+  </a>
+  <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit"
+            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition duration-200 cursor-pointer">
+      Logout
+    </button>
+  </form>
+</div>
+
   </div>
 </header>
 {{-- end Navbar --}}
