@@ -4,21 +4,22 @@
     <button id="sidebar-toggle" class="p-2 rounded bg-gray-900 hover:bg-gray-700 cursor-pointer transition">
       <i data-feather="menu" class="w-5 h-5"></i>
     </button>
-    <h1 class="text-xl font-bold">User Panel</h1>
+    @php
+        $role = Auth::user()->role ?? 'user';
+        $panelTitle = strtoupper($role) . ' Panel';
+    @endphp
+    <h1 class="text-xl font-bold">{{ $panelTitle }}</h1>
   </div>
-
   <div class="text-sm md:text-base">
+    {{-- Menu Info --}}
     @yield('menu-info', 'Dashboard')
   </div>
-
   <!-- User Dropdown -->
   <div class="relative">
     <button id="user-menu-button" class="flex items-center space-x-2 focus:outline-none cursor-pointer hover:opacity-80 transition">
       <i data-feather="user"></i>
-      <span>Fairuz</span>
+      <span>{{ Auth::user()->name ?? 'User' }}</span>
     </button>
-
-    <!-- Dropdown Menu -->
     <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-md z-50 transition duration-200 ease-out">
       <form method="POST" action="{{ route('logout') }}">
         @csrf
@@ -30,3 +31,4 @@
     </div>
   </div>
 </header>
+{{-- end Navbar --}}
