@@ -1,0 +1,6 @@
+Table Recruitment:
+1. applicants
+2. employee_request_forms
+3. job_vacancies
+4. job_requests
+5. contact_messages

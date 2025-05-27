@@ -36,20 +36,44 @@
 
   let isExpanded = false;
 
-    // dropdown logout user navbar
-    document.addEventListener("DOMContentLoaded", function () {
-    const userBtn = document.getElementById("user-menu-button");
-    const dropdown = document.getElementById("user-dropdown");
+   document.addEventListener("DOMContentLoaded", function () {
+  feather.replace();
 
-    userBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      dropdown.classList.toggle("hidden");
-    });
+  const userBtn = document.getElementById("user-menu-button");
+  const dropdown = document.getElementById("user-dropdown");
 
-    document.addEventListener("click", function () {
-      dropdown.classList.add("hidden");
-    });
+  userBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const isHidden = dropdown.classList.contains("hidden");
+    if (isHidden) {
+      dropdown.classList.remove("hidden");
+      // Next tick, biar style dibaca browser dulu
+      setTimeout(() => {
+        dropdown.classList.remove("scale-95", "opacity-0", "pointer-events-none");
+        dropdown.classList.add("scale-100", "opacity-100");
+      }, 10);
+    } else {
+      dropdown.classList.remove("scale-100", "opacity-100");
+      dropdown.classList.add("scale-95", "opacity-0", "pointer-events-none");
+      // Setelah transisi, baru di-hide (waktu harus sama/lebih dari duration)
+      setTimeout(() => {
+        dropdown.classList.add("hidden");
+      }, 200);
+    }
   });
+
+  document.addEventListener("click", function (e) {
+    if (dropdown && !dropdown.classList.contains("hidden")) {
+      dropdown.classList.remove("scale-100", "opacity-100");
+      dropdown.classList.add("scale-95", "opacity-0", "pointer-events-none");
+      setTimeout(() => {
+        dropdown.classList.add("hidden");
+      }, 200);
+    }
+  });
+});
+
+
 
   toggleBtn.addEventListener('click', (e) => {
     e.stopPropagation();
