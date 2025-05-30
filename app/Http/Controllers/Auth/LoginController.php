@@ -15,10 +15,10 @@ class LoginController extends Controller
             $user = Auth::user();
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
-                'hrd'   => redirect()->route('hrd.dashboard'),
-                'ga'    => redirect()->route('ga.dashboard'),
-                'it'    => redirect()->route('it.dashboard'),
-                default => redirect()->route('user.dashboard'),
+                // 'hrd'   => redirect()->route('hrd.dashboard'),
+                // 'ga'    => redirect()->route('ga.dashboard'),
+                // 'it'    => redirect()->route('it.dashboard'),
+                // default => redirect()->route('user.dashboard'),
             };
         }
         return view('auth.login');
@@ -38,10 +38,10 @@ class LoginController extends Controller
             $user = Auth::user();
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
-                'hrd'   => redirect()->route('hrd.dashboard'),
-                'ga'    => redirect()->route('ga.dashboard'),
-                'it'    => redirect()->route('it.dashboard'),
-                default => redirect()->route('user.dashboard'),
+                // 'hrd'   => redirect()->route('hrd.dashboard'),
+                // 'ga'    => redirect()->route('ga.dashboard'),
+                // 'it'    => redirect()->route('it.dashboard'),
+                // default => redirect()->route('user.dashboard'),
             };
         }
 

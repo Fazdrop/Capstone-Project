@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            //mengubah kolom 'division' menjadi foreign key yang mengacu pada tabel 'divisions'
+            //change the ‘division’ column to a foreign key that references the ‘divisions’ table
             // $table->string('division');
             $table->foreignId('division_id')->constrained('divisions')->onDelete('cascade');
             $table->string('role')->nullable();

@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
 
 // ADMIN PANEL (hanya admin)
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    
+
     // Dashboard Admin PAKAI CONTROLLER
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 

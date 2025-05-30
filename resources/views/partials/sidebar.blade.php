@@ -8,8 +8,10 @@
   <nav class="mt-6 space-y-2 px-2">
      {{-- Sementara pakai salah satu ini manual, sesuai role yang mau kamu lihat dulu --}}
 
+    {{-- untuk mengatur sidebar sesuai dengan role --}}
+
     @include('partials.sidebars.admin')
-    {{-- @include('partials.sidebars.hrd') --}}
+    {{-- @include('partials.sidebars.hod') --}}
     {{-- @include('partials.sidebars.bod') --}}
     {{-- @include('partials.sidebars.ga') --}}
     {{-- @include('partials.sidebars.departemen') --}}
