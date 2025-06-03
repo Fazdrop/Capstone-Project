@@ -72,10 +72,24 @@
                     <option value="hod" {{ old('role') == 'hod' ? 'selected' : '' }}>Head of Division (HoD)</option>
                     <option value="staff_hr" {{ old('role') == 'staff_hr' ? 'selected' : '' }}>Staff HR</option>
                     <option value="manager_hr" {{ old('role') == 'manager_hr' ? 'selected' : '' }}>Manager HR</option>
-                    {{-- <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User Biasa</option> --}}
-
+                    <option value="ga" {{ old('role') == 'ga' ? 'selected' : '' }}>GA</option>
+                    <option value="it" {{ old('role') == 'it' ? 'selected' : '' }}>IT</option>
+                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                 </select>
                 @error('role')
+                    <div class="text-red-600 mt-1">{{ $message }}</div>
+                @enderror
+            </div>
+
+            {{-- Tambahkan Status --}}
+            <div>
+                <label for="is_active" class="block text-sm font-semibold mb-1">Status</label>
+                <select name="is_active" id="is_active" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400">
+                    <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>Aktif</option>
+                    <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
+                </select>
+                @error('is_active')
                     <div class="text-red-600 mt-1">{{ $message }}</div>
                 @enderror
             </div>

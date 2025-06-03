@@ -30,6 +30,7 @@ class UserController extends Controller
             'password' => 'required|min:6',
             'division_id' => 'required|exists:divisions,id',
             'role' => 'required',
+            'is_active' => 'required|boolean',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -51,6 +52,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'division_id' => 'required|exists:divisions,id',
             'role' => 'required',
+            'is_active' => 'required|boolean'
         ]);
         // Password optional saat edit
         if ($request->filled('password')) {

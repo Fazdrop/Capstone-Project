@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'division_id',  // pastikan ini sesuai kolom di migration
         'role',
+        'is_active',
+        'last_login_at',
     ];
 
     /**

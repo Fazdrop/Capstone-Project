@@ -13,7 +13,7 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            return match($user->role) {
+            return match ($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
                 // Aktifkan atau tambah role lain sesuai kebutuhan
@@ -31,18 +31,31 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' =>['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
 
+        // Coba login, tapi cek dulu status aktif
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
             $user = Auth::user();
-            return match($user->role) {
+
+            // 1. Cek apakah user aktif?
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Akun Anda nonaktif. Hubungi admin untuk mengaktifkan kembali.'
+                ])->onlyInput('email');
+            }
+
+            // 2. Update last_login_at
+            $user->last_login_at = now();
+            $user->save();
+
+            // 3. Arahkan ke dashboard sesuai role
+            $request->session()->regenerate();
+            return match ($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
-                // Aktifkan atau tambah role lain sesuai kebutuhan
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
                 // 'it'    => redirect()->route('it.dashboard'),
@@ -56,6 +69,7 @@ class LoginController extends Controller
             'email' => 'Email atau Password yang diberikan salah.',
         ])->onlyInput('email');
     }
+
 
     // Proses logout
     public function logout(Request $request)
