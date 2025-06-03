@@ -15,10 +15,13 @@ class LoginController extends Controller
             $user = Auth::user();
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
+                'hod'   => redirect()->route('hod.dashboard'),
+                // Aktifkan atau tambah role lain sesuai kebutuhan
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
                 // 'it'    => redirect()->route('it.dashboard'),
                 // default => redirect()->route('user.dashboard'),
+                default => abort(403, 'Role tidak dikenali.'),
             };
         }
         return view('auth.login');
@@ -38,10 +41,13 @@ class LoginController extends Controller
             $user = Auth::user();
             return match($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
+                'hod'   => redirect()->route('hod.dashboard'),
+                // Aktifkan atau tambah role lain sesuai kebutuhan
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
                 // 'it'    => redirect()->route('it.dashboard'),
                 // default => redirect()->route('user.dashboard'),
+                default => abort(403, 'Role tidak dikenali.'),
             };
         }
 

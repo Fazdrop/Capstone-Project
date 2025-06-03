@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\DivisionController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\HoD\DashboardController as HoDDashboardController;
 
 // Halaman utama (redirect ke login)
 Route::get('/', function () {
@@ -35,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     // Dashboard Admin PAKAI CONTROLLER
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     // CRUD Division (hanya admin)
     Route::get('/divisions', [DivisionController::class, 'index'])->name('admin.divisions.index');
@@ -54,33 +55,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
-// HRD PANEL (hanya HRD)
-Route::middleware(['auth', 'role:hrd'])->prefix('hrd')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('hrd.dashboard');
-    })->name('hrd.dashboard');
-    // Tambah CRUD HRD jika ada
+// ======================
+// HoD PANEL (hanya HoD)
+
+Route::middleware(['auth', 'role:hod'])->prefix('hod')->group(function () {
+    // Dashboard HoD PAKAI CONTROLLER
+    Route::get('/dashboard', [HoDDashboardController::class, 'index'])->name('hod.dashboard');
 });
 
-// GA PANEL (hanya GA)
-Route::middleware(['auth', 'role:ga'])->prefix('ga')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('ga.dashboard');
-    })->name('ga.dashboard');
-    // Tambah CRUD GA jika ada
-});
 
-// IT PANEL (hanya IT)
-Route::middleware(['auth', 'role:it'])->prefix('it')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('it.dashboard');
-    })->name('it.dashboard');
-    // Tambah CRUD IT jika ada
-});
 
-// USER UMUM (role user biasa)
-Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('user.dashboard');
-    })->name('user.dashboard');
-});
