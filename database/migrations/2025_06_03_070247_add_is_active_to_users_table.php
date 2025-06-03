@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->boolean('is_active')->default(true)->after('role')->comment('Indicates if the user is active');
+            $table->timestamp('last_login_at')->nullable()->after('is_active')->comment('Timestamp of the last login');
+
+
         });
     }
 
@@ -23,6 +27,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->dropColumn('is_active');
+            $table->dropColumn('last_login_at');
         });
     }
 };
