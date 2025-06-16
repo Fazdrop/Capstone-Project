@@ -70,11 +70,8 @@
                     <option value="">-- Pilih Role --</option>
                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="hod" {{ old('role') == 'hod' ? 'selected' : '' }}>Head of Division (HoD)</option>
-                    <option value="staff_hr" {{ old('role') == 'staff_hr' ? 'selected' : '' }}>Staff HR</option>
-                    <option value="manager_hr" {{ old('role') == 'manager_hr' ? 'selected' : '' }}>Manager HR</option>
-                    <option value="ga" {{ old('role') == 'ga' ? 'selected' : '' }}>GA</option>
-                    <option value="it" {{ old('role') == 'it' ? 'selected' : '' }}>IT</option>
-                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                    {{-- <option value="staff_hr" {{ old('role') == 'staff_hr' ? 'selected' : '' }}>Staff HR</option>
+                    <option value="manager_hr" {{ old('role') == 'manager_hr' ? 'selected' : '' }}>Manager HR</option> --}}
                 </select>
                 @error('role')
                     <div class="text-red-600 mt-1">{{ $message }}</div>

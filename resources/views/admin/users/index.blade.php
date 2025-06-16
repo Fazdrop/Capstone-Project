@@ -4,18 +4,20 @@
 @section('menu-info', 'List User')
 
 @section('content')
+    {{-- Wrapper utama konten --}}
     <div class="w-full max-w-6xl mx-auto mt-10 px-4"> {{-- Increased max-width and added horizontal padding --}}
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-extrabold text-indigo-800 flex items-center gap-3">
-                <i data-feather="users" class="w-8 h-8"></i>
+        {{-- Header Halaman: Judul dan Tombol Tambah (Sudah Responsif) --}}
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-800 flex items-center gap-2 sm:gap-3">
+                <i data-feather="users" class="w-7 h-7 sm:w-8 sm:h-8"></i>
                 Daftar User
-                <span class="ml-2 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold tracking-wide">
+                <span class="ml-2 px-2 py-1 sm:px-3 bg-indigo-100 text-indigo-700 rounded-full text-xs sm:text-sm font-semibold tracking-wide">
                     {{ $users->count() }} user
                 </span>
             </h1>
             <a href="{{ route('admin.users.create') }}"
-                class="inline-flex items-center px-5 py-2 bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-800 transition duration-300 ease-in-out gap-2">
-                <i data-feather="plus-circle" class="w-5 h-5"></i>
+                class="w-full sm:w-auto inline-flex items-center justify-center sm:justify-start px-4 py-2 sm:px-5 bg-indigo-700 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-800 transition duration-300 ease-in-out gap-2 text-sm sm:text-base">
+                <i data-feather="plus-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                 Tambah User Baru
             </a>
         </div>
@@ -29,8 +31,10 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200"> {{-- Added a subtle border --}}
-            <div class="overflow-x-auto"> {{-- Added for horizontal scrolling on small screens if needed --}}
+        {{-- Kontainer Tabel --}}
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"> {{-- Added subtle border and overflow-hidden --}}
+            {{-- Div untuk scroll horizontal jika tabel panjang --}}
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -87,7 +91,7 @@
                                     {{ $user->created_at->format('d M Y') }}
                                 </td>
                                 <td class="py-3 px-5 whitespace-nowrap text-sm text-gray-500">
-                                     {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : '-' }}
+                                    {{ $user->last_login_at ? \Carbon\Carbon::parse($user->last_login_at)->diffForHumans() : '-' }}
                                 </td>
                                 <td class="py-3 px-5 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center gap-2">
