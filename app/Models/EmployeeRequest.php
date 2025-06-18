@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmployeeRequest extends Model
 {
-    //
     protected $fillable = [
+        'user_id',
         'division_id',
         'request_number',
         'request_date',
@@ -44,11 +44,24 @@ class EmployeeRequest extends Model
     ];
 
     protected $casts = [
-        'request_date' => 'date',
-        'contract_end_date' => 'date',
-        'required_date' => 'date',
+        'request_date'               => 'date',
+        'contract_end_date'          => 'date',
+        'required_date'              => 'date',
+        'education_level'            => 'array',
+        'major_requirement'          => 'array',
+        'job_description'            => 'array',
+        'soft_skills_requirement'    => 'array',
+        'hard_skills_requirement'    => 'array',
+        'supporting_documents'       => 'array',
+        // Tambah lagi array-casts lain jika ada
     ];
 
+    // app/Models/EmployeeRequest.php
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function division(): BelongsTo
     {

@@ -13,6 +13,7 @@
         {
             Schema::create('employee_requests', function (Blueprint $table) {
                 $table->id(); //1
+                $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); //1.1 user_id sebagai pemohon
                 $table->foreignId('division_id')->nullable()->constrained()->onDelete('set null');
                 $table->string('request_number'); //2 nomor fpk
                 $table->date('request_date'); //3 tanggal permintaan
@@ -36,7 +37,7 @@
                 $table->date('required_date')->nullable(); //21 tanggal bergabung yang diharapkan
                 $table->string('job_type')->nullable(); //22 tipe pekerjaan
                 $table->string('special_criteria')->nullable(); //23 kriteria khusus
-                $table->enum('education_level', ['elementary', 'junior_high', 'senior_high', 'd1', 'd2', 'd3', 's1', 's2', 's3'])->default('s1'); //24 tingkat pendidikan
+                $table->text('education_level')->nullable(); // atau string, json, dsb
                 $table->string('major_requirement')->nullable(); //25 jurusan pendidikan
                 $table->text('job_description')->nullable(); //26 deskripsi pekerjaan
                 $table->text('soft_skills_requirement')->nullable(); //27 soft skill
