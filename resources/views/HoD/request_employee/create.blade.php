@@ -4,9 +4,6 @@
 @section('menu-info', 'Formulir Permintaan Karyawan')
 
 @section('content')
-    {{-- Tagify CDN --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
-    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
 
     <div class="max-w-2xl mx-auto mt-10 bg-white rounded-xl shadow-lg p-8 border border-gray-200" x-data="{
         step: 1,
@@ -137,7 +134,7 @@
                     @enderror
                 </div>
                 <div class="mb-4" x-show="employmentType === 'contract'" x-transition>
-                    <label class="block mb-1 font-medium">Tanggal Berakhir Kontrak</label>
+                    <label class="block mb-1 font-medium">Tanggal Kontrak s/d</label>
                     <input type="date" name="contract_end_date"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition"
                         value="{{ old('contract_end_date') }}">
@@ -205,6 +202,11 @@
                                 <input type="radio" name="gender_requirement" value="female"
                                     {{ old('gender_requirement') == 'female' ? 'checked' : '' }} required>
                                 <span class="ml-1">Wanita</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="gender_requirement" value="any"
+                                    {{ old('gender_requirement') == 'any' ? 'checked' : '' }} required>
+                                <span class="ml-1">Bebas</span>
                             </label>
                         </div>
                         <div class="flex gap-2 items-center">
@@ -308,10 +310,10 @@
                 </div>
                 <div class="mb-6">
                     <label class="block mb-1 font-medium">Upload File Pendukung</label>
-                    <input type="file" name="supporting_documents[]" multiple
+                    <input type="file" name="supporting_documents"
                         class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                    <small class="text-gray-500">Bisa upload lebih dari satu file (opsional).</small>
-                    @error('supporting_documents.*')
+                    <small class="text-gray-500">Upload file (pdf, doc, docx, jpg, jpeg, png, max 2MB, opsional).</small>
+                    @error('supporting_documents')
                         <span class="text-sm text-red-600">{{ $message }}</span>
                     @enderror
                 </div>

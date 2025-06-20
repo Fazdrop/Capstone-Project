@@ -29,7 +29,7 @@
                 $table->enum('request_type', ['new', 'replace'])->default('new'); //13 jenis permintaan/permintaan untuk
                 $table->enum('replacement_reason', ['resign', 'mutation', 'promotion',])->nullable(); //14 penggantian
                 $table->text('reason')->nullable(); //15 alasan permintaan
-                $table->enum('gender_requirement', ['male', 'female'])->default('male'); //16 kualifikasi jenis kelamin
+                $table->enum('gender_requirement', ['male', 'female', 'any'])->default('male'); //16 kualifikasi jenis kelamin & tambahkan any
                 $table->integer('min_age_requirement')->nullable(); //17 kualifikasi_usia_min
                 $table->integer('max_age_requirement')->nullable(); //18 kualifikasi_usia_max
                 $table->string('experience_requirement')->nullable(); //19 kualifikasi pengalaman
@@ -43,6 +43,7 @@
                 $table->text('soft_skills_requirement')->nullable(); //27 soft skill
                 $table->text('hard_skills_requirement')->nullable(); //28 hard skill
                 $table->string('supporting_documents')->nullable(); //29 dokumen pendukung
+                $table->string('supporting_documents_original_name')->nullable(); // nama asli dokumen pendukung
                 $table->string('workflow_status')->default('submitted_by_user'); //30 status alur kerja
                 $table->text('suggested_tasks_and_responsibilities')->nullable(); //31 tugas dan tanggung jawab yang disarankan
                 $table->text('notes')->nullable(); //32 catatan tambahan

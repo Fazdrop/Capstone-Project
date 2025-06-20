@@ -38,6 +38,7 @@ class EmployeeRequest extends Model
         'soft_skills_requirement',
         'hard_skills_requirement',
         'supporting_documents',
+        'supporting_documents_original_name',
         'workflow_status',
         'suggested_tasks_and_responsibilities',
         'notes',

@@ -199,7 +199,7 @@
                     @enderror
                 </div>
                 <div class="mb-4" x-show="employmentType === 'contract'" x-transition>
-                    <label class="block mb-1 font-medium">Tanggal Berakhir Kontrak</label>
+                    <label class="block mb-1 font-medium">Tanggal Kontrak s/d</label>
                     <input type="date" name="contract_end_date"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition"
                         value="{{ old('contract_end_date', optional($request->contract_end_date)->format('Y-m-d')) }}">
@@ -332,7 +332,7 @@
             </div>
 
             {{-- STEP 4: Job Description & Requirements --}}
-            
+
             <div x-show="step === 4" x-transition>
                 <label class="block mb-1 font-medium">Uraian Pekerjaan <span class="text-red-500">*</span></label>
                 <template x-for="(desc, i) in jobDescriptions" :key="i">
@@ -355,9 +355,7 @@
                 <div class="mb-4">
                     <label class="block mb-1 font-medium">Soft Skill</label>
                     <input id="soft_skills_requirement" name="soft_skills_requirement"
-                        value='@json($softSkillsArray)'
-                        class="w-full"
-                        x-init="initTagify('#soft_skills_requirement', softSkillsOptions)">
+                        value='@json($softSkillsArray)' class="w-full" x-init="initTagify('#soft_skills_requirement', softSkillsOptions)">
                     <small class="text-gray-500">Anda bisa mengetik atau memilih lebih dari satu skill.</small>
                     @error('soft_skills_requirement')
                         <span class="text-sm text-red-600">{{ $message }}</span>
@@ -367,9 +365,7 @@
                 <div class="mb-4">
                     <label class="block mb-1 font-medium">Hard Skill</label>
                     <input id="hard_skills_requirement" name="hard_skills_requirement"
-                        value='@json($hardSkillsArray)'
-                        class="w-full"
-                        x-init="initTagify('#hard_skills_requirement', hardSkillsOptions)">
+                        value='@json($hardSkillsArray)' class="w-full" x-init="initTagify('#hard_skills_requirement', hardSkillsOptions)">
                     <small class="text-gray-500">Anda bisa mengetik atau memilih lebih dari satu skill.</small>
                     @error('hard_skills_requirement')
                         <span class="text-sm text-red-600">{{ $message }}</span>
@@ -378,28 +374,29 @@
                 {{-- Upload File --}}
                 <div class="mb-6">
                     <label class="block mb-1 font-medium">Upload File Pendukung Baru</label>
-                    <input type="file" name="supporting_documents[]" multiple
+                    <input type="file" name="supporting_documents"
                         class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                     <small class="text-gray-500">Kosongkan jika tidak ingin mengubah file yang sudah ada.</small>
-                    @if (!empty($currentFiles))
+                    @if (!empty($request->supporting_documents))
                         <div class="mt-2">
                             <span class="text-xs text-gray-500 font-semibold">File saat ini:</span>
                             <ul class="list-disc ml-5 text-sm">
-                                @foreach ($currentFiles as $file)
-                                    <li>
-                                        <a href="{{ asset('storage/' . $file) }}" target="_blank"
-                                            class="text-green-700 hover:underline">
-                                            {{ basename($file) }}
-                                        </a>
-                                    </li>
-                                @endforeach
+                                <li>
+                                    <a href="{{ asset('storage/' . $request->supporting_documents) }}" target="_blank"
+                                        class="text-green-700 hover:underline">
+                                        {{ $request->supporting_documents_original_name ?? basename($request->supporting_documents) }}
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     @endif
-                    @error('supporting_documents.*')
+                    @error('supporting_documents')
                         <span class="text-sm text-red-600">{{ $message }}</span>
                     @enderror
                 </div>
+
+
+
             </div> {{-- STEP 4 --}}
 
             {{-- BUTTONS --}}

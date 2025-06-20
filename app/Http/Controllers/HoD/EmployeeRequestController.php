@@ -40,34 +40,34 @@ class EmployeeRequestController extends Controller
             'request_type' => 'required|in:new,replace',
             'replacement_reason' => 'nullable|in:resign,mutation,promotion|required_if:request_type,replace',
             'reason' => 'nullable|string',
-            'gender_requirement' => 'required|in:male,female',
+            'gender_requirement' => 'required|in:male,female,any',
             'min_age_requirement' => 'nullable|integer|min:17',
             'max_age_requirement' => 'nullable|integer|min:17|gte:min_age_requirement',
             'experience_requirement' => 'required|string',
             'education_level' => 'required|array|min:1',
-            'major_requirement' => 'nullable|string', // Tagify = json array string
+            'major_requirement' => 'nullable|string',
             'job_description' => 'required|array|min:1',
-            'soft_skills_requirement' => 'nullable|string', // Tagify = json array string
-            'hard_skills_requirement' => 'nullable|string', // Tagify = json array string
-            'supporting_documents' => 'nullable',
-            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'soft_skills_requirement' => 'nullable|string',
+            'hard_skills_requirement' => 'nullable|string',
+            'supporting_documents' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+
         ]);
 
         $validated['education_level'] = json_encode($request->input('education_level'));
         $validated['job_description'] = json_encode($request->input('job_description'));
-
-        // Tagify fields: JSON string dari Tagify, bukan explode!
         $validated['major_requirement'] = $this->normalizeTagify($request->major_requirement);
         $validated['soft_skills_requirement'] = $this->normalizeTagify($request->soft_skills_requirement);
         $validated['hard_skills_requirement'] = $this->normalizeTagify($request->hard_skills_requirement);
 
-        // File upload
+        // Handle single file upload
         if ($request->hasFile('supporting_documents')) {
-            $filePaths = [];
-            foreach ($request->file('supporting_documents') as $file) {
-                $filePaths[] = $file->store('supporting_documents', 'public');
-            }
-            $validated['supporting_documents'] = json_encode($filePaths);
+            $file = $request->file('supporting_documents');
+            $path = $file->store('supporting_documents', 'public');
+            $validated['supporting_documents'] = $path;
+            $validated['supporting_documents_original_name'] = $file->getClientOriginalName();
+        } else {
+            $validated['supporting_documents'] = null;
+            $validated['supporting_documents_original_name'] = null;
         }
 
         $validated['division_id'] = Auth::user()->division_id;
@@ -91,13 +91,10 @@ class EmployeeRequestController extends Controller
     {
         $request = EmployeeRequest::findOrFail($id);
 
-        // Cek apakah user yang login adalah pemilik request
         if ($request->user_id !== Auth::id()) {
             return redirect()->route('hod.request_employee.index')
                 ->with('error', 'Anda tidak memiliki izin untuk mengedit permintaan ini.');
         }
-
-        // Status yang boleh diedit
         $editableStatuses = ['submitted_by_user', 'revisi', 'rejected'];
         $currentStatus = strtolower(str_replace(' ', '_', $request->workflow_status));
         if (!in_array($currentStatus, $editableStatuses)) {
@@ -112,7 +109,6 @@ class EmployeeRequestController extends Controller
     {
         $employeeRequest = EmployeeRequest::findOrFail($id);
 
-        // Cek izin dan status sekali lagi sebelum update
         if ($employeeRequest->user_id !== Auth::id()) {
             return redirect()->route('hod.request_employee.index')
                 ->with('error', 'Anda tidak memiliki izin untuk mengupdate permintaan ini.');
@@ -124,7 +120,6 @@ class EmployeeRequestController extends Controller
                 ->with('error', 'Gagal update. Permintaan sudah dalam proses persetujuan.');
         }
 
-        // Validasi data
         $validated = $request->validate([
             'request_date' => 'required|date',
             'requester_name' => 'required|string|max:255',
@@ -148,8 +143,7 @@ class EmployeeRequestController extends Controller
             'job_description' => 'required|array|min:1',
             'soft_skills_requirement' => 'nullable|string',
             'hard_skills_requirement' => 'nullable|string',
-            'supporting_documents' => 'nullable',
-            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'supporting_documents' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
         ]);
 
         $validated['education_level'] = json_encode($request->input('education_level'));
@@ -158,23 +152,19 @@ class EmployeeRequestController extends Controller
         $validated['soft_skills_requirement'] = $this->normalizeTagify($request->soft_skills_requirement);
         $validated['hard_skills_requirement'] = $this->normalizeTagify($request->hard_skills_requirement);
 
-        // Handle file upload (jika ada file baru)
+        // Handle file upload (overwrite jika ada file baru)
         if ($request->hasFile('supporting_documents')) {
             // Hapus file lama jika ada
             if ($employeeRequest->supporting_documents) {
-                $oldFiles = json_decode($employeeRequest->supporting_documents, true) ?? [];
-                foreach ($oldFiles as $oldFile) {
-                    Storage::disk('public')->delete($oldFile);
-                }
+                Storage::disk('public')->delete($employeeRequest->supporting_documents);
             }
-            $filePaths = [];
-            foreach ($request->file('supporting_documents') as $file) {
-                $filePaths[] = $file->store('supporting_documents', 'public');
-            }
-            $validated['supporting_documents'] = json_encode($filePaths);
+            // Upload file baru
+            $file = $request->file('supporting_documents');
+            $path = $file->store('supporting_documents', 'public');
+            $validated['supporting_documents'] = $path;
+            $validated['supporting_documents_original_name'] = $file->getClientOriginalName();
         }
 
-        // Reset status workflow setelah update
         $validated['workflow_status'] = 'submitted_by_user';
 
         $employeeRequest->update($validated);
@@ -187,11 +177,11 @@ class EmployeeRequestController extends Controller
     {
         $request = EmployeeRequest::findOrFail($id);
 
-        // Hapus file terkait jika ada
-        if ($request->supporting_documents) {
-            $files = json_decode($request->supporting_documents, true) ?? [];
-            foreach ($files as $file) {
-                Storage::disk('public')->delete($file);
+        // Hapus semua file terkait jika ada
+        $files = json_decode($request->supporting_documents, true) ?? [];
+        foreach ($files as $file) {
+            if (isset($file['path'])) {
+                Storage::disk('public')->delete($file['path']);
             }
         }
 
@@ -202,11 +192,6 @@ class EmployeeRequestController extends Controller
     }
 
     // === Helper Function ===
-    /**
-     * Jika field Tagify kosong, kembalikan json array kosong.
-     * Jika isian valid json array, return as is.
-     * Jika tidak valid json (misal user edit manual), tetap return json array kosong.
-     */
     private function normalizeTagify($value)
     {
         if (empty($value)) return json_encode([]);
