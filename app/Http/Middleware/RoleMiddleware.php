@@ -18,11 +18,17 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        //untuk mengecek apakah user yang sedang login memiliki role yang sesuai
-        // Jika user tidak terautentikasi atau role tidak sesuai, abort dengan status 403
-        if (!Auth::check() || Auth::user()->role !== $role) {
-            abort(403, 'Unauthorized');
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
+
+        // Jika user tidak punya role, atau role-nya tidak sama dengan yang dibutuhkan
+        if (!Auth::user()->role || Auth::user()->role->name !== $role) {
+            // Logout user dan redirect ke login dengan pesan error
+            Auth::logout();
+            return redirect()->route('login')->withErrors(['auth' => 'Akses ditolak, role tidak dikenali!']);
+        }
+
         return $next($request);
     }
 }

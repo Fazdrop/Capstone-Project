@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Division;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -12,14 +13,15 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('division')->get();
+        $users = User::with(['division', 'role'])->get();
         return view('admin.users.index', compact('users'));
     }
 
     public function create()
     {
         $divisions = Division::all();
-        return view('admin.users.create', compact('divisions'));
+        $roles = Role::all();
+        return view('admin.users.create', compact('divisions', 'roles'));
     }
 
     public function store(Request $request)
@@ -29,7 +31,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'division_id' => 'required|exists:divisions,id',
-            'role' => 'required',
+            'role_id' => 'required|exists:roles,id',
             'is_active' => 'required|boolean',
         ]);
 
@@ -42,7 +44,8 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $divisions = Division::all();
-        return view('admin.users.edit', compact('user', 'divisions'));
+        $roles = Role::all();
+        return view('admin.users.edit', compact('user', 'divisions', 'roles'));
     }
 
     public function update(Request $request, User $user)
@@ -51,7 +54,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'division_id' => 'required|exists:divisions,id',
-            'role' => 'required',
+            'role_id' => 'required|exists:roles,id',
             'is_active' => 'required|boolean'
         ]);
         // Password optional saat edit

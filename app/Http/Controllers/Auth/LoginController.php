@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -13,7 +14,8 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            return match ($user->role) {
+            // Log::info('User already logged in', ['user_id' => $user->id, 'role' => $user->role]);
+            return match ($user->role->name) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
                 // Aktifkan atau tambah role lain sesuai kebutuhan
@@ -53,7 +55,7 @@ class LoginController extends Controller
 
             // 3. Arahkan ke dashboard sesuai role
             $request->session()->regenerate();
-            return match ($user->role) {
+            return match ($user->role->name) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
                 // 'hrd'   => redirect()->route('hrd.dashboard'),

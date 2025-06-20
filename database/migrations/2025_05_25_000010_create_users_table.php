@@ -17,13 +17,14 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            //change the ‘division’ column to a foreign key that references the ‘divisions’ table
-            // $table->string('division');
             $table->foreignId('division_id')->constrained('divisions')->onDelete('cascade');
-            $table->string('role')->nullable();
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->boolean('is_active')->default(true)->comment('Indicates if the user is active');
+            $table->timestamp('last_login_at')->nullable()->comment('Timestamp of the last login');
             $table->rememberToken();
             $table->timestamps();
         });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

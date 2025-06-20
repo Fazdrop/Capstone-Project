@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DivisionController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\HoD\EmployeeRequestController;
 use App\Http\Controllers\HoD\DashboardController as HoDDashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 // ======================
 // Halaman utama (redirect ke login)
@@ -41,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Resource route untuk user & division
     Route::resource('users', UserController::class);
     Route::resource('divisions', DivisionController::class);
+    Route::resource('roles',RoleController::class);
 });
 
 // ======================

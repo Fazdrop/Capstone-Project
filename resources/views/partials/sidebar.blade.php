@@ -8,7 +8,7 @@
   <nav class="mt-6 space-y-2 px-2">
     {{-- Logic: pilih sidebar sesuai role --}}
     @php
-      $role = Auth::user()->role ?? null;
+      $role = Auth::user()?->role?->name ?? null;
     @endphp
 
     @if($role === 'admin')

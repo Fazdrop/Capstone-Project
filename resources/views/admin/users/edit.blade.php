@@ -4,77 +4,95 @@
 @section('menu-info', 'Edit User')
 
 @section('content')
+    {{-- Hidden div untuk menyimpan data roles dalam format JSON. Ini mencegah masalah parsing di x-data. --}}
+    <div id="roles-data-edit" class="hidden" data-roles="{{ $roles->map(fn($r) => ['id' => $r->id, 'name' => $r->name])->toJson() }}"></div>
+
     <div class="flex justify-center items-center min-h-[80vh]">
         <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8" x-data="{
-            // Inisialisasi state Alpine.js dengan nilai dari PHP (old input atau data user)
             selectedDivisionId: '{{ old('division_id', $user->division_id) }}',
-            selectedRole: '{{ old('role', $user->role) }}',
+            selectedRoleId: '{{ old('role_id', $user->role_id) }}',
             isRoleLocked: false,
-            showAdminRoleOption: true, // Default: tampilkan opsi Admin sampai divisi dipilih
+            filteredRoles: [],
+            allRoles: [], // Akan diisi di fungsi init()
 
             // Fungsi untuk menangani perubahan pada dropdown divisi
             handleDivisionChange(event) {
                 const selectedOption = event.target.options[event.target.selectedIndex];
-                const divisionName = selectedOption.getAttribute('data-name');
+                const divisionName = selectedOption ? selectedOption.getAttribute('data-name') : '';
 
-                if (divisionName && divisionName.toLowerCase() === 'admin') {
-                    // Jika divisi adalah 'Admin'
-                    this.showAdminRoleOption = true; // Pastikan opsi 'Admin' terlihat terlebih dahulu
-                    this.$nextTick(() => { // Tunggu sampai DOM diperbarui
-                        this.selectedRole = 'admin'; // Kemudian atur role menjadi 'admin'
-                        this.isRoleLocked = true; // Kunci dropdown role
-                    });
-                } else {
-                    // Jika divisi BUKAN 'Admin'
-                    this.isRoleLocked = false; // Buka kunci dropdown role
-                    this.showAdminRoleOption = false; // Sembunyikan opsi 'Admin'
+                // Menggunakan $nextTick untuk memastikan DOM diperbarui setelah Alpine.js membuat/menyembunyikan opsi
+                this.$nextTick(() => {
+                    if (divisionName && divisionName.toLowerCase() === 'admin') {
+                        // Filter hanya peran 'admin' jika divisi yang dipilih adalah 'Admin'
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
+                        // Pilih peran 'admin' jika ada
+                        if (this.filteredRoles.length > 0) {
+                            this.selectedRoleId = this.filteredRoles[0].id;
+                        } else {
+                            this.selectedRoleId = ''; // Tidak ada peran 'admin' yang ditemukan
+                        }
+                        this.isRoleLocked = true; // Kunci dropdown peran
+                    } else {
+                        // Filter semua peran kecuali 'admin' jika divisi bukan 'Admin'
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
+                        this.isRoleLocked = false; // Buka kunci dropdown peran
 
-                    // Jika role sebelumnya adalah 'admin' dan divisi berubah ke non-admin,
-                    // reset selectedRole agar tidak ada pilihan 'admin' yang tidak valid
-                    if (this.selectedRole === 'admin') {
-                        this.selectedRole = ''; // Atur ulang ke kosong untuk memaksa pemilihan ulang
+                        // Jika peran yang sedang dipilih (selectedRoleId) tidak ada di filteredRoles yang baru, reset
+                        if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
+                            this.selectedRoleId = '';
+                        }
                     }
-                }
+                });
             },
 
             // Fungsi yang berjalan saat komponen pertama kali dimuat
             init() {
-                // Periksa state awal saat halaman dimuat (jika ada validation error atau old input atau data user)
+                // Ambil data allRoles dari hidden div dan parse sebagai JSON
+                const rolesDataElement = document.getElementById('roles-data-edit'); // Menggunakan ID unik
+                if (rolesDataElement) {
+                    this.allRoles = JSON.parse(rolesDataElement.dataset.roles);
+                } else {
+                    console.error('Elemen data peran tersembunyi tidak ditemukan.');
+                    this.allRoles = []; // Fallback ke array kosong
+                }
+
+                // Atur status awal berdasarkan nilai old('division_id') atau user->division_id
                 if (this.selectedDivisionId) {
+                    // Temukan opsi divisi yang sesuai dengan selectedDivisionId
                     const initialOption = this.$refs.divisionSelect.querySelector(`option[value='${this.selectedDivisionId}']`);
-                    if (initialOption) {
-                        const initialDivisionName = initialOption.getAttribute('data-name');
-                        if (initialDivisionName && initialDivisionName.toLowerCase() === 'admin') {
-                            this.isRoleLocked = true;
-                            this.showAdminRoleOption = true;
-                            // Pastikan selectedRole adalah 'admin' jika divisi admin sudah terpilih sebelumnya
-                            this.selectedRole = 'admin';
+                    const initialDivisionName = initialOption ? initialOption.getAttribute('data-name') : '';
+
+                    if (initialDivisionName && initialDivisionName.toLowerCase() === 'admin') {
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
+                        if (this.filteredRoles.length > 0) {
+                            this.selectedRoleId = this.filteredRoles[0].id;
                         } else {
-                            this.isRoleLocked = false;
-                            this.showAdminRoleOption = false; // Sembunyikan opsi admin jika divisi non-admin sudah terpilih
-                            // Reset jika old role adalah admin untuk divisi non-admin
-                            if (this.selectedRole === 'admin') {
-                                this.selectedRole = '';
-                            }
+                            this.selectedRoleId = '';
+                        }
+                        this.isRoleLocked = true;
+                    } else {
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
+                        this.isRoleLocked = false;
+                        // Pastikan selectedRoleId awal masih valid setelah filtering
+                        if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
+                            this.selectedRoleId = '';
                         }
                     }
                 } else {
-                    // Jika tidak ada divisi yang terpilih di awal (halaman baru atau user belum memiliki divisi),
-                    // opsi admin harus terlihat agar bisa dipilih jika user memilih divisi Admin
-                    this.showAdminRoleOption = true;
+                    // Jika tidak ada divisi yang terpilih di awal, tampilkan semua peran
+                    this.filteredRoles = this.allRoles;
                 }
             }
-        }"
-            x-init="init()">
+        }" x-init="init()">
 
             <h1 class="text-2xl font-bold mb-2 text-indigo-700 flex items-center gap-2">
                 <i data-feather="edit"></i> Edit User
             </h1>
-
             <p class="text-gray-500 mb-6">Ubah detail pengguna di bawah ini.</p>
             <form method="POST" action="{{ route('admin.users.update', $user->id) }}" class="space-y-5">
                 @csrf
                 @method('PUT')
+
                 <div>
                     <label for="name" class="block text-sm font-medium mb-1">Nama</label>
                     <input type="text" name="name" id="name"
@@ -93,9 +111,9 @@
                         <div class="text-red-600 mt-1 text-xs">{{ $message }}</div>
                     @enderror
                 </div>
-                {{-- Password field is intentionally commented out as per your original code.
-                     Uncomment if you want to allow password changes from this form. --}}
-                {{-- <div>
+                {{-- Password field masih sama (optional di edit, bisa dikasih jika mau ganti) --}}
+                {{-- Jika Anda ingin mengaktifkan field password:
+                <div>
                     <label for="password" class="block text-sm font-medium mb-1 flex items-center gap-1">
                         Password
                         <span class="text-xs text-gray-400">(Biarkan kosong jika tidak ingin diubah)</span>
@@ -107,11 +125,12 @@
                     @error('password')
                         <div class="text-red-600 mt-1 text-xs">{{ $message }}</div>
                     @enderror
-                </div> --}}
+                </div>
+                --}}
                 <div>
                     <label for="division_id" class="block text-sm font-medium mb-1">Divisi</label>
-                    <select name="division_id" id="division_id" required
-                        x-model="selectedDivisionId" x-ref="divisionSelect" x-on:change="handleDivisionChange($event)"
+                    <select name="division_id" id="division_id" required x-model="selectedDivisionId" x-ref="divisionSelect"
+                        x-on:change="handleDivisionChange($event)"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
                         <option value="">-- Pilih Divisi --</option>
                         @foreach ($divisions as $division)
@@ -126,28 +145,20 @@
                     @enderror
                 </div>
                 <div>
-                    <label for="role" class="block text-sm font-medium mb-1">Role</label>
-                    <select name="role" id="role" required
-                        x-model="selectedRole" :disabled="isRoleLocked" :class="{ 'bg-gray-100': isRoleLocked }"
+                    <label for="role_id" class="block text-sm font-medium mb-1">Role</label>
+                    <select name="role_id" id="role_id" required x-model="selectedRoleId" :disabled="isRoleLocked"
+                        :class="{ 'bg-gray-100': isRoleLocked }"
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition">
                         <option value="">-- Pilih Role --</option>
-                        {{-- Menggunakan x-if untuk menyembunyikan/menampilkan opsi Admin --}}
-                        <template x-if="showAdminRoleOption">
-                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <template x-for="role in filteredRoles" :key="role.id">
+                            <option :value="role.id" x-text="role.name.charAt(0).toUpperCase() + role.name.slice(1)"
+                                :selected="selectedRoleId == role.id"></option>
                         </template>
-                        <option value="hod" {{ old('role', $user->role) == 'hod' ? 'selected' : '' }}>Head of Division (HoD)</option>
-                        <option value="manager" {{ old('role', $user->role) == 'manager' ? 'selected' : '' }}>Manager</option>
-                        {{-- Uncomment these if you need them:
-                        <option value="staff_hr" {{ old('role', $user->role) == 'staff_hr' ? 'selected' : '' }}>Staff HR</option>
-                        <option value="manager_hr" {{ old('role', $user->role) == 'manager_hr' ? 'selected' : '' }}>Manager HR</option>
-                        --}}
                     </select>
-                    @error('role')
+                    @error('role_id')
                         <div class="text-red-600 mt-1 text-xs">{{ $message }}</div>
                     @enderror
                 </div>
-
-                {{-- Tambahkan Status --}}
                 <div>
                     <label for="is_active" class="block text-sm font-medium mb-1">Status</label>
                     <select name="is_active" id="is_active" required

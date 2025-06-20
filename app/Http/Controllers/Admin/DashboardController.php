@@ -16,8 +16,12 @@ class DashboardController extends Controller
         $divisionCount = \App\Models\Division::count();
         // menghitung total user yang aktif
         $activeUserCount = \App\Models\User::where('is_active', true)->count();
+        //menghitung total role
+        $roleCount = \App\Models\Role::count();
+
+
 
         // Kirim data ke view 'admin.dashboard'
-        return view('admin.dashboard', compact('userCount','activeUserCount', 'divisionCount'));
+        return view('admin.dashboard', compact('userCount','activeUserCount', 'divisionCount','roleCount'));
     }
 }

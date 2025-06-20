@@ -19,11 +19,11 @@
         </h1>
         <p class="text-gray-600 mb-8">
             Selamat datang, <span class="font-semibold text-indigo-700">{{ auth()->user()->name ?? 'Admin' }}</span>!<br>
-            Ini adalah pusat kontrol aplikasi. Kelola data user, divisi, dan fitur penting lain dari sini.
+            Ini adalah pusat kontrol aplikasi. Kelola data user, divisi, role, dan fitur penting lain dari sini.
         </p>
 
         {{-- Statistik --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white shadow rounded-xl p-6 flex items-center gap-4">
                 <div class="bg-indigo-100 text-indigo-700 p-3 rounded-full">
                     <i data-feather="users" class="w-6 h-6"></i>
@@ -53,11 +53,11 @@
             </div>
             <div class="bg-white shadow rounded-xl p-6 flex items-center gap-4">
                 <div class="bg-yellow-100 text-yellow-700 p-3 rounded-full">
-                    <i data-feather="activity" class="w-6 h-6"></i>
+                    <i data-feather="award" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <div class="text-xl font-bold">Aktif</div>
-                    <div class="text-gray-500 text-sm">Status Sistem</div>
+                    <div class="text-xl font-bold">{{ $roleCount ?? '-' }}</div>
+                    <div class="text-gray-500 text-sm">Total Role</div>
                 </div>
             </div>
         </div>
@@ -73,6 +73,11 @@
                 class="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow transition font-semibold">
                 <i data-feather="grid" class="w-5 h-5"></i>
                 Manajemen Divisi
+            </a>
+            <a href="{{ route('admin.roles.index') }}"
+                class="flex items-center gap-2 px-5 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow transition font-semibold">
+                <i data-feather="award" class="w-5 h-5"></i>
+                Manajemen Role
             </a>
         </div>
     </div>

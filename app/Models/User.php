@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'division_id',  // pastikan ini sesuai kolom di migration
-        'role',
+        'role_id',
         'is_active',
         'last_login_at',
     ];
@@ -53,5 +53,13 @@ class User extends Authenticatable
     public function division(): BelongsTo
     {
         return $this->belongsTo(Division::class, 'division_id');
+    }
+    /**
+     * Relasi ke Role.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+
     }
 }

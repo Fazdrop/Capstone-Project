@@ -78,7 +78,9 @@
                 });
             });
 
-
+            document.addEventListener('alpine:init', () => {
+                feather.replace();
+            });
 
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -100,6 +102,7 @@
 
                 feather.replace(); // refresh icons
             });
+
 
             // Auto-hide any flash messages after 3s
             document.addEventListener('DOMContentLoaded', () => {

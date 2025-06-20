@@ -4,60 +4,85 @@
 @section('menu-info', 'Tambah User Baru')
 
 @section('content')
+    {{-- Hidden div untuk menyimpan data roles dalam format JSON. Ini mencegah masalah parsing di x-data. --}}
+    <div id="roles-data" class="hidden" data-roles="{{ $roles->map(fn($r) => ['id' => $r->id, 'name' => $r->name])->toJson() }}"></div>
+
     <div class="max-w-lg mx-auto mt-12 bg-white p-8 rounded-2xl shadow-lg border border-gray-100" x-data="{
         selectedDivisionId: '{{ old('division_id') }}',
-        selectedRole: '{{ old('role') }}',
+        selectedRoleId: '{{ old('role_id') }}',
         isRoleLocked: false,
-        showAdminRoleOption: true, // Default: tampilkan opsi Admin sampai divisi dipilih
+        filteredRoles: [],
+        allRoles: [], // Diinisialisasi di sini, akan diisi di fungsi init()
 
-        // Fungsi untuk memeriksa divisi saat dropdown berubah
+        // Fungsi untuk menangani perubahan pada dropdown divisi
         handleDivisionChange(event) {
             const selectedOption = event.target.options[event.target.selectedIndex];
-            const divisionName = selectedOption.getAttribute('data-name');
+            const divisionName = selectedOption ? selectedOption.getAttribute('data-name') : '';
 
-            if (divisionName && divisionName.toLowerCase() === 'admin') {
-                // Jika divisi adalah 'Admin'
-                this.selectedRole = 'admin'; // Set role menjadi 'admin'
-                this.isRoleLocked = true; // Kunci dropdown role
-                this.showAdminRoleOption = true; // Pastikan opsi 'Admin' terlihat
-            } else {
-                // Jika divisi BUKAN 'Admin'
-                this.isRoleLocked = false; // Buka kunci dropdown role
-                this.showAdminRoleOption = false; // Sembunyikan opsi 'Admin'
+            // Menggunakan $nextTick untuk memastikan DOM diperbarui setelah Alpine.js membuat/menyembunyikan opsi
+            this.$nextTick(() => {
+                if (divisionName && divisionName.toLowerCase() === 'admin') {
+                    // Filter hanya peran 'admin' jika divisi yang dipilih adalah 'Admin'
+                    this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
+                    // Pilih peran 'admin' jika ada
+                    if (this.filteredRoles.length > 0) {
+                        this.selectedRoleId = this.filteredRoles[0].id;
+                    } else {
+                        this.selectedRoleId = ''; // Tidak ada peran 'admin' yang ditemukan
+                    }
+                    this.isRoleLocked = true; // Kunci dropdown peran
+                } else {
+                    // Filter semua peran kecuali 'admin' jika divisi bukan 'Admin'
+                    this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
+                    this.isRoleLocked = false; // Buka kunci dropdown peran
 
-                // Jika role sebelumnya adalah 'admin' dan divisi berubah ke non-admin,
-                // reset selectedRole agar tidak ada pilihan 'admin' yang tidak valid
-                if (this.selectedRole === 'admin') {
-                    this.selectedRole = ''; // Atur ulang ke kosong untuk memaksa pemilihan ulang
+                    // Jika peran yang sedang dipilih (selectedRoleId) tidak ada di filteredRoles yang baru, reset
+                    if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
+                        this.selectedRoleId = '';
+                    }
                 }
-            }
+            });
         },
 
         // Fungsi yang berjalan saat komponen pertama kali dimuat
         init() {
-            // Periksa state awal saat halaman dimuat (jika ada validation error atau old input)
+            // Ambil data allRoles dari hidden div dan parse sebagai JSON
+            const rolesDataElement = document.getElementById('roles-data');
+            if (rolesDataElement) {
+                this.allRoles = JSON.parse(rolesDataElement.dataset.roles);
+            } else {
+                // Log error jika elemen data tidak ditemukan (untuk debugging)
+                console.error('Elemen data peran tersembunyi tidak ditemukan.');
+                this.allRoles = []; // Fallback ke array kosong
+            }
+
+            // Atur status awal berdasarkan nilai old('division_id') jika ada
             if (this.selectedDivisionId) {
+                // Temukan opsi divisi yang sesuai dengan selectedDivisionId
                 const initialOption = this.$refs.divisionSelect.querySelector(`option[value='${this.selectedDivisionId}']`);
-                if (initialOption) {
-                    const initialDivisionName = initialOption.getAttribute('data-name');
-                    if (initialDivisionName && initialDivisionName.toLowerCase() === 'admin') {
-                        this.isRoleLocked = true;
-                        this.showAdminRoleOption = true;
-                        // Pastikan selectedRole adalah 'admin' jika divisi admin sudah terpilih sebelumnya
-                        this.selectedRole = 'admin';
+                const initialDivisionName = initialOption ? initialOption.getAttribute('data-name') : '';
+
+                if (initialDivisionName && initialDivisionName.toLowerCase() === 'admin') {
+                    // Jika divisi awal adalah 'Admin', filter hanya peran 'admin'
+                    this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
+                    if (this.filteredRoles.length > 0) {
+                        this.selectedRoleId = this.filteredRoles[0].id;
                     } else {
-                        this.isRoleLocked = false;
-                        this.showAdminRoleOption = false; // Sembunyikan opsi admin jika divisi non-admin sudah terpilih
-                        // Reset jika old role adalah admin untuk divisi non-admin
-                        if (this.selectedRole === 'admin') {
-                            this.selectedRole = '';
-                        }
+                        this.selectedRoleId = '';
+                    }
+                    this.isRoleLocked = true;
+                } else {
+                    // Jika divisi awal bukan 'Admin', filter semua kecuali peran 'admin'
+                    this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
+                    this.isRoleLocked = false;
+                    // Pastikan selectedRoleId awal masih valid setelah filtering
+                    if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
+                        this.selectedRoleId = '';
                     }
                 }
             } else {
-                // Jika tidak ada divisi yang terpilih di awal (halaman baru),
-                // opsi admin harus terlihat agar bisa dipilih jika user memilih divisi Admin
-                this.showAdminRoleOption = true;
+                // Jika tidak ada divisi yang terpilih di awal (halaman baru), tampilkan semua peran
+                this.filteredRoles = this.allRoles;
             }
         }
     }"
@@ -129,20 +154,17 @@
 
             {{-- Role --}}
             <div>
-                <label for="role" class="block text-sm font-semibold mb-1">Role</label>
-                <select name="role" id="role" required x-model="selectedRole" :disabled="isRoleLocked"
+                <label for="role_id" class="block text-sm font-semibold mb-1">Role</label>
+                <select name="role_id" id="role_id" required x-model="selectedRoleId" :disabled="isRoleLocked"
                     :class="{ 'bg-gray-100': isRoleLocked }"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition">
                     <option value="">-- Pilih Role --</option>
-                    {{-- Menggunakan x-if untuk menyembunyikan/menampilkan opsi Admin --}}
-                    <template x-if="showAdminRoleOption">
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                    <template x-for="role in filteredRoles" :key="role.id">
+                        <option :value="role.id" x-text="role.name.charAt(0).toUpperCase() + role.name.slice(1)"
+                            :selected="selectedRoleId == role.id"></option>
                     </template>
-                    <option value="hod" {{ old('role') == 'hod' ? 'selected' : '' }}>Head of Division (HoD)</option>
-                    <option value="manager" {{ old('role') == 'manager' ? 'manager' : '' }}>Manager</option>
-
                 </select>
-                @error('role')
+                @error('role_id')
                     <div class="text-red-600 mt-1">{{ $message }}</div>
                 @enderror
             </div>
