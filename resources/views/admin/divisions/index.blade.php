@@ -54,7 +54,7 @@
                     @forelse($divisions as $division)
                         <tr class="hover:bg-indigo-50 transition-colors duration-200">
                             <td class="py-3 px-5 whitespace-nowrap text-sm text-gray-700">{{ $loop->iteration }}</td>
-                            <td class="py-3 px-5 whitespace-nowrap text-sm font-medium text-gray-900">{{ $division->name }}</td>
+                            <td class="py-3 px-5 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">{{ $division->name }}</td>
                             <td class="py-3 px-5 whitespace-nowrap text-sm text-gray-600">
                                 {{ $division->created_at->format('d M Y') }}
                             </td>

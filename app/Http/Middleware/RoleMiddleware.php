@@ -22,12 +22,20 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        // Jika user tidak punya role, atau role-nya tidak sama dengan yang dibutuhkan
-        if (!Auth::user()->role || Auth::user()->role->name !== $role) {
-            // Logout user dan redirect ke login dengan pesan error
-            Auth::logout();
-            return redirect()->route('login')->withErrors(['auth' => 'Akses ditolak, role tidak dikenali!']);
+
+        // Bandingkan dengan lowercase agar case-insensitive
+        $userRole = strtolower(Auth::user()?->role?->name ?? '');
+
+        if ($userRole !== strtolower($role)) {
+            abort(403, 'ROLE TIDAK DIKENALI.');
         }
+        logger('DEBUG ROLE', [
+            'expected_role' => strtolower($role),
+            'user_role'     => $userRole,
+            'user_id'       => Auth::user()->id,
+            'user_email'    => Auth::user()->email,
+            'role_id'       => Auth::user()->role_id,
+        ]);
 
         return $next($request);
     }

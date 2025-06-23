@@ -14,10 +14,12 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            // Log::info('User already logged in', ['user_id' => $user->id, 'role' => $user->role]);
+            Log::info('User already logged in', ['user_id' => $user->id, 'role' => $user->role]);
             return match ($user->role->name) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
+                'manager'   => redirect()->route('manager.dashboard'),
+
                 // Aktifkan atau tambah role lain sesuai kebutuhan
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
@@ -58,6 +60,7 @@ class LoginController extends Controller
             return match ($user->role->name) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
+                'manager'   => redirect()->route('manager.dashboard'),
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
                 // 'it'    => redirect()->route('it.dashboard'),

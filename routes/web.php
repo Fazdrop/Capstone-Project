@@ -7,8 +7,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\HoD\EmployeeRequestController;
+use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 use App\Http\Controllers\HoD\DashboardController as HoDDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
 
 // ======================
 // Halaman utama (redirect ke login)
@@ -57,8 +59,25 @@ Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(func
 });
 
 
+// ======================
+// MANAGER PANEL (hanya manager)
+// ======================
+Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')->group(function () {
+    Route::get('/dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
+});
+
+
+
+
+
+
 
 //Helper
+
+Route::get('/force-logout', function () {
+    \Illuminate\Support\Facades\Auth::logout();
+    return redirect('/login');
+});
 
 
 // ======================

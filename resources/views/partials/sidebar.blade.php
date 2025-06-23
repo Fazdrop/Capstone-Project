@@ -17,11 +17,11 @@
       @include('partials.sidebars.hod')
     @elseif($role === 'manager')
       @include('partials.sidebars.manager')
-    @elseif($role === 'ga')
+    {{-- @elseif($role === 'ga')
       @include('partials.sidebars.ga')
     @elseif($role === 'departemen')
       @include('partials.sidebars.departemen')
-    @else
+    @else --}}
       {{-- Optional: sidebar default/user biasa --}}
       {{-- @include('partials.sidebars.user') --}}
     @endif

@@ -25,6 +25,9 @@ class DivisionController extends Controller
             'name' => 'required|unique:divisions,name',
         ]);
 
+        // Pastikan name selalu lowercase!
+        $validated['name'] = strtolower($validated['name']);
+
         Division::create($validated);
         return redirect()->route('admin.divisions.index')->with('success', 'Division berhasil dibuat!');
     }
@@ -39,6 +42,9 @@ class DivisionController extends Controller
         $validated = $request->validate([
             'name' => 'required|unique:divisions,name,' . $division->id,
         ]);
+        // Pastikan name selalu lowercase!
+        $validated['name'] = strtolower($validated['name']);
+
 
         $division->update($validated);
         return redirect()->route('admin.divisions.index')->with('success', 'Division berhasil diupdate!');
