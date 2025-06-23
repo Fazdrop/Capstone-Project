@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+
 class EmployeeRequestController extends Controller
 {
     public function index()
@@ -164,6 +165,17 @@ class EmployeeRequestController extends Controller
             $validated['supporting_documents'] = $path;
             $validated['supporting_documents_original_name'] = $file->getClientOriginalName();
         }
+
+        // ... setelah validasi
+        // Cek apakah ada permintaan hapus file (dari input hidden di form)
+        if ($request->input('delete_supporting_documents') == '1') {
+            if ($employeeRequest->supporting_documents) {
+                Storage::disk('public')->delete($employeeRequest->supporting_documents);
+                $validated['supporting_documents'] = null;
+                $validated['supporting_documents_original_name'] = null;
+            }
+        }
+
 
         $validated['workflow_status'] = 'submitted_by_user';
 

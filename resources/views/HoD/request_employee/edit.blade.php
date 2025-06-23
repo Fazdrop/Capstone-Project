@@ -378,18 +378,39 @@
                         class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                     <small class="text-gray-500">Kosongkan jika tidak ingin mengubah file yang sudah ada.</small>
                     @if (!empty($request->supporting_documents))
-                        <div class="mt-2">
-                            <span class="text-xs text-gray-500 font-semibold">File saat ini:</span>
-                            <ul class="list-disc ml-5 text-sm">
-                                <li>
-                                    <a href="{{ asset('storage/' . $request->supporting_documents) }}" target="_blank"
-                                        class="text-green-700 hover:underline">
-                                        {{ $request->supporting_documents_original_name ?? basename($request->supporting_documents) }}
-                                    </a>
-                                </li>
-                            </ul>
+                        <div x-data="{ confirmDelete: false, fileDeleted: false }">
+                            <template x-if="!fileDeleted">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span class="text-xs text-gray-500 font-semibold">File saat ini:</span>
+                                    <ul class="list-disc ml-5 text-sm">
+                                        <li class="flex items-center gap-2">
+                                            <a href="{{ asset('storage/' . $request->supporting_documents) }}"
+                                                target="_blank" class="text-green-700 hover:underline">
+                                                {{ $request->supporting_documents_original_name ?? basename($request->supporting_documents) }}
+                                            </a>
+                                            <!-- Tombol silang besar -->
+                                            <button type="button" @click="confirmDelete = true"
+                                                class="ml-2 text-red-500 hover:text-red-700 text-2xl font-extrabold flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 transition"
+                                                title="Hapus File">
+                                                &times;
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </template>
+                            <div x-show="confirmDelete" class="mt-2">
+                                <span class="text-red-600 text-xs">Yakin hapus file ini?</span>
+                                <button type="button"
+                                    @click="fileDeleted = true; confirmDelete = false; $refs.deleteInput.value = 1"
+                                    class="ml-2 px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700">Ya,
+                                    Hapus</button>
+                                <button type="button" @click="confirmDelete = false"
+                                    class="ml-2 px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Batal</button>
+                            </div>
+                            <input type="hidden" x-ref="deleteInput" name="delete_supporting_documents" value="0">
                         </div>
                     @endif
+
                     @error('supporting_documents')
                         <span class="text-sm text-red-600">{{ $message }}</span>
                     @enderror

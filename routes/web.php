@@ -56,6 +56,11 @@ Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(func
     Route::resource('request_employee', EmployeeRequestController::class);
 });
 
+
+
+//Helper
+
+
 // ======================
 // (TAMBAHAN: HRD, BOD, dll, jika perlu, tinggal copy pola di atas)
 // ======================

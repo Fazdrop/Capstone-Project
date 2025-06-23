@@ -34,6 +34,9 @@ class RoleController extends Controller
             'name' => 'required|string|unique:roles,name|max:255',
         ]);
 
+        // Pastikan name selalu lowercase
+        $validated['name'] = strtolower($validated['name']);
+
         Role::create($validated);
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil ditambahkan!');
@@ -68,6 +71,9 @@ class RoleController extends Controller
             'name' => 'required|string|unique:roles,name,' . $role->id . '|max:255',
         ]);
 
+        // Pastikan name selalu lowercase
+        $validated['name'] = strtolower($validated['name']);
+        
         $role->update($validated);
 
         return redirect()->route('admin.roles.index')->with('success', 'Role berhasil diupdate!');
