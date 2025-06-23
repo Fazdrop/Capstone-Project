@@ -7,9 +7,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\DivisionController;
 use App\Http\Controllers\HoD\EmployeeRequestController;
-use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
+use App\Http\Controllers\Manager\ApprovalRequestController;
 use App\Http\Controllers\HoD\DashboardController as HoDDashboardController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
 
 
 // ======================
@@ -44,7 +46,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Resource route untuk user & division
     Route::resource('users', UserController::class);
     Route::resource('divisions', DivisionController::class);
-    Route::resource('roles',RoleController::class);
+    Route::resource('roles', RoleController::class);
 });
 
 // ======================
@@ -63,7 +65,20 @@ Route::middleware(['auth', 'role:hod'])->prefix('hod')->name('hod.')->group(func
 // MANAGER PANEL (hanya manager)
 // ======================
 Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')->group(function () {
+    // Dashboard Manager umum
     Route::get('/dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
+    //Menu Approval untuk Manager HR saja
+    Route::get('/approve-request', [ApprovalRequestController::class, 'index'])->name('approve_request.index');
+    Route::post('/approve-request/{id}/approve', [ApprovalRequestController::class, 'approve'])->name('approve_request.approve');
+    Route::post('/approve-request/{id}/reject', [ApprovalRequestController::class, 'reject'])->name('approve_request.reject');
+});
+
+// ======================
+// Staff PANEL (hanya staff)
+// ======================
+Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
+    // Tambah fitur lain staff di sini
 });
 
 

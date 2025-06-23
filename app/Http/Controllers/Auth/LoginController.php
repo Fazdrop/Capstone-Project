@@ -19,6 +19,7 @@ class LoginController extends Controller
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
                 'manager'   => redirect()->route('manager.dashboard'),
+                'staff'   => redirect()->route('staff.dashboard'),
 
                 // Aktifkan atau tambah role lain sesuai kebutuhan
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
@@ -61,6 +62,7 @@ class LoginController extends Controller
                 'admin' => redirect()->route('admin.dashboard'),
                 'hod'   => redirect()->route('hod.dashboard'),
                 'manager'   => redirect()->route('manager.dashboard'),
+                'staff'   => redirect()->route('staff.dashboard'),
                 // 'hrd'   => redirect()->route('hrd.dashboard'),
                 // 'ga'    => redirect()->route('ga.dashboard'),
                 // 'it'    => redirect()->route('it.dashboard'),

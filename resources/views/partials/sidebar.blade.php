@@ -17,9 +17,9 @@
       @include('partials.sidebars.hod')
     @elseif($role === 'manager')
       @include('partials.sidebars.manager')
-    {{-- @elseif($role === 'ga')
-      @include('partials.sidebars.ga')
-    @elseif($role === 'departemen')
+    @elseif($role === 'staff')
+      @include('partials.sidebars.staff')
+    {{-- @elseif($role === 'departemen')
       @include('partials.sidebars.departemen')
     @else --}}
       {{-- Optional: sidebar default/user biasa --}}
