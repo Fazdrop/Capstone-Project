@@ -40,12 +40,19 @@
                 <dd>
                     @php
                         $statusMap = [
-                            'user_submit' => ['User Submit', 'bg-green-100 text-green-800'],
-                            'disetujui' => ['Disetujui', 'bg-blue-100 text-blue-800'],
-                            'ready_for_approval' => ['Ready for Approval', 'bg-yellow-100 text-yellow-800'],
-                            'fpk_terisi' => ['FPK Terisi', 'bg-gray-100 text-gray-800'],
+                            'submitted_by_user' => ['Menunggu Staff HR', 'bg-gray-100 text-gray-800'],
+                            'waiting_fpk' => ['Menunggu FPK Staff HR', 'bg-blue-100 text-blue-800'],
+                            'fpk_created' => ['FPK Dibuat', 'bg-green-100 text-green-800'],
+                            'waiting_manager_approval' => [
+                                'Menunggu Approval Manager HR',
+                                'bg-indigo-100 text-indigo-800',
+                            ],
+                            'approved' => ['Disetujui', 'bg-green-200 text-green-800'],
+                            'rejected' => ['Ditolak', 'bg-red-100 text-red-800'],
+                            'draft' => ['Draft', 'bg-yellow-100 text-yellow-800'],
+                            'revisi' => ['Revisi', 'bg-yellow-100 text-yellow-800'],
                         ];
-                        $workflow = strtolower(str_replace(' ', '_', $request->workflow_status));
+                        $workflow = strtolower($request->workflow_status);
                         $badge = $statusMap[$workflow] ?? [$request->workflow_status, 'bg-gray-100 text-gray-800'];
                     @endphp
                     <span class="px-3 py-1 rounded-lg font-semibold text-xs {{ $badge[1] }}">
@@ -56,10 +63,9 @@
         </dl>
         <div class="mt-8 flex justify-start">
             <a href="{{ route('hod.request_employee.index') }}"
-                class="px-5 py-2 rounded-lg bg-gray-300  hover:bg-gray-400 text-gray-900 shadow font-semibold transition">
+                class="px-5 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 text-gray-900 shadow font-semibold transition">
                 Kembali
             </a>
-
         </div>
     </div>
 @endsection

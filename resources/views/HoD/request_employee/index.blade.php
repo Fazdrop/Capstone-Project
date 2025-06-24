@@ -89,20 +89,28 @@
                                 <td class="py-3 px-5 text-sm font-semibold">
                                     {{-- Badge Status Workflow --}}
                                     @php
-                                        $status = strtolower(str_replace(' ', '_', $req->workflow_status));
+                                        $status = strtolower($req->workflow_status);
                                         $statusMap = [
-                                            'submitted_by_user' => ['User Submit', 'text-green-700'],
-                                            'disetujui' => ['Disetujui', 'text-blue-700'],
-                                            'rejected' => ['Rejected', 'text-red-600'],
+                                            'submitted_by_user' => ['Menunggu Staff HR', 'text-gray-700'],
+                                            'waiting_fpk' => ['Menunggu FPK Staff HR', 'text-blue-700'],
+                                            'fpk_created' => ['FPK Dibuat', 'text-green-700'],
+                                            'waiting_manager_approval' => [
+                                                'Menunggu Approval Manager HR',
+                                                'text-indigo-700',
+                                            ],
+                                            'approved' => ['Disetujui', 'text-green-700'],
+                                            'rejected' => ['Ditolak', 'text-red-600'],
+                                            'draft' => ['Draft', 'text-yellow-700'],
                                             'revisi' => ['Revisi', 'text-yellow-700'],
                                         ];
                                     @endphp
                                     @if (isset($statusMap[$status]))
                                         <span class="{{ $statusMap[$status][1] }}">{{ $statusMap[$status][0] }}</span>
                                     @else
-                                        <span class="text-gray-700">{{ $req->workflow_status }}</span>
+                                        <span class="text-gray-700">{{ ucfirst($req->workflow_status) }}</span>
                                     @endif
                                 </td>
+                                
                                 <td class="py-3 px-5 text-sm font-medium">
                                     <div class="flex items-center gap-2">
                                         <a href="{{ route('hod.request_employee.show', $req->id) }}"
@@ -110,8 +118,13 @@
                                             <i data-feather="eye" class="w-4 h-4 mr-1"></i>Lihat
                                         </a>
                                         @php
-                                            // Kondisi boleh edit hanya kalau status: submitted_by_user, rejected, revisi
-                                            $canEdit = in_array($status, ['submitted_by_user', 'rejected', 'revisi']);
+                                            // Boleh edit jika status: draft, submitted_by_user, rejected, revisi
+                                            $canEdit = in_array($status, [
+                                                'draft',
+                                                'submitted_by_user',
+                                                'rejected',
+                                                'revisi',
+                                            ]);
                                         @endphp
                                         @if ($canEdit)
                                             <a href="{{ route('hod.request_employee.edit', $req->id) }}"

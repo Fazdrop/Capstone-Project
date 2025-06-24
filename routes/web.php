@@ -6,20 +6,32 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\DivisionController;
+use App\Http\Controllers\Public\LandingController;
 use App\Http\Controllers\HoD\EmployeeRequestController;
+use App\Http\Controllers\Staff\RequestEmployeeController;
 use App\Http\Controllers\Manager\ApprovalRequestController;
 use App\Http\Controllers\HoD\DashboardController as HoDDashboardController;
-use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Staff\JobVacancyController as StaffJobVacancyController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
+use App\Http\Controllers\Public\ApplicantController;
+use App\Http\Controllers\Public\JobVacancyController as PublicJobVacancyController;
 
 
 // ======================
-// Halaman utama (redirect ke login)
+// Halaman utama (Landing Page Publik)
 // ======================
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// ======================
+// Halaman Career Publik
+// ======================
+Route::get('/career', [PublicJobVacancyController::class, 'index'])->name('career.index');
+Route::get('/career/{id}', [PublicJobVacancyController::class, 'show'])->name('career.show');
+Route::get('/career/{id}/apply', [ApplicantController::class, 'form'])->name('career.apply');
+Route::post('/career/{id}/apply', [ApplicantController::class, 'submit'])->name('career.submit');
+
 
 // ======================
 // Login & Logout Route
@@ -79,6 +91,14 @@ Route::middleware(['auth', 'role:manager'])->prefix('manager')->name('manager.')
 Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
     // Tambah fitur lain staff di sini
+    Route::resource('request_employee', RequestEmployeeController::class);
+    // Route custom untuk submit approval FPK
+    Route::post('request_employee/{id}/submit-approval', [RequestEmployeeController::class, 'submitApproval'])->name('request_employee.submitApproval');
+
+    Route::post('request_employee/{id}/reject', [RequestEmployeeController::class, 'reject'])->name('request_employee.reject');
+
+    // Resource untuk post job vacancy (CRUD lowongan oleh staff HR)
+    Route::resource('job_vacancy', StaffJobVacancyController::class)->names('job_vacancy');
 });
 
 

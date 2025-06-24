@@ -20,7 +20,8 @@ class ApprovalRequestController extends Controller
             abort(403, 'Akses khusus Manager HR.');
         }
 
-        $requests = EmployeeRequest::where('workflow_status', 'submitted_by_user')->latest()->get();
+        // Hanya tampilkan request yang sudah siap approval manager
+        $requests = EmployeeRequest::where('workflow_status', 'waiting_manager_approval')->latest()->get();
         return view('manager.approve_request.index', compact('requests'));
     }
 
@@ -48,4 +49,3 @@ class ApprovalRequestController extends Controller
         return redirect()->back()->with('success', 'Permintaan ditolak.');
     }
 }
-    
