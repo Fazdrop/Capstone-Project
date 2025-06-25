@@ -57,6 +57,9 @@
                             <th class="py-3 px-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Status
                             </th>
+                            <th class="py-3 px-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Notes
+                            </th>
                             <th
                                 class="py-3 px-5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-40">
                                 Aksi
@@ -110,7 +113,14 @@
                                         <span class="text-gray-700">{{ ucfirst($req->workflow_status) }}</span>
                                     @endif
                                 </td>
-                                
+                                <td class="py-3 px-5 text-sm text-gray-700">
+                                    @if ($req->notes)
+                                        {{ $req->notes }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
                                 <td class="py-3 px-5 text-sm font-medium">
                                     <div class="flex items-center gap-2">
                                         <a href="{{ route('hod.request_employee.show', $req->id) }}"

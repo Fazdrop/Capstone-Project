@@ -5,7 +5,8 @@
 
 @section('content')
     {{-- Hidden div untuk menyimpan data roles dalam format JSON. Ini mencegah masalah parsing di x-data. --}}
-    <div id="roles-data-edit" class="hidden" data-roles="{{ $roles->map(fn($r) => ['id' => $r->id, 'name' => $r->name])->toJson() }}"></div>
+    <div id="roles-data-edit" class="hidden"
+        data-roles="{{ $roles->map(fn($r) => ['id' => $r->id, 'name' => $r->name])->toJson() }}"></div>
 
     <div class="flex justify-center items-center min-h-[80vh]">
         <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8" x-data="{
@@ -14,37 +15,34 @@
             isRoleLocked: false,
             filteredRoles: [],
             allRoles: [], // Akan diisi di fungsi init()
-
+        
             // Fungsi untuk menangani perubahan pada dropdown divisi
             handleDivisionChange(event) {
                 const selectedOption = event.target.options[event.target.selectedIndex];
                 const divisionName = selectedOption ? selectedOption.getAttribute('data-name') : '';
-
-                // Menggunakan $nextTick untuk memastikan DOM diperbarui setelah Alpine.js membuat/menyembunyikan opsi
+        
                 this.$nextTick(() => {
-                    if (divisionName && divisionName.toLowerCase() === 'admin') {
-                        // Filter hanya peran 'admin' jika divisi yang dipilih adalah 'Admin'
-                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
-                        // Pilih peran 'admin' jika ada
+                    if (divisionName && (divisionName.toLowerCase() === 'admin' || divisionName.toLowerCase() === 'bod')) {
+                        // Filter hanya role 'admin' jika divisi Admin, atau hanya 'bod' jika divisi BoD
+                        let roleName = divisionName.toLowerCase();
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === roleName);
                         if (this.filteredRoles.length > 0) {
                             this.selectedRoleId = this.filteredRoles[0].id;
                         } else {
-                            this.selectedRoleId = ''; // Tidak ada peran 'admin' yang ditemukan
+                            this.selectedRoleId = '';
                         }
-                        this.isRoleLocked = true; // Kunci dropdown peran
+                        this.isRoleLocked = true;
                     } else {
-                        // Filter semua peran kecuali 'admin' jika divisi bukan 'Admin'
-                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
-                        this.isRoleLocked = false; // Buka kunci dropdown peran
-
-                        // Jika peran yang sedang dipilih (selectedRoleId) tidak ada di filteredRoles yang baru, reset
+                        // Selain itu, filter semua role kecuali admin dan bod
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin' && role.name.toLowerCase() !== 'bod');
+                        this.isRoleLocked = false;
                         if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
                             this.selectedRoleId = '';
                         }
                     }
                 });
             },
-
+        
             // Fungsi yang berjalan saat komponen pertama kali dimuat
             init() {
                 // Ambil data allRoles dari hidden div dan parse sebagai JSON
@@ -55,15 +53,16 @@
                     console.error('Elemen data peran tersembunyi tidak ditemukan.');
                     this.allRoles = []; // Fallback ke array kosong
                 }
-
+        
                 // Atur status awal berdasarkan nilai old('division_id') atau user->division_id
                 if (this.selectedDivisionId) {
                     // Temukan opsi divisi yang sesuai dengan selectedDivisionId
                     const initialOption = this.$refs.divisionSelect.querySelector(`option[value='${this.selectedDivisionId}']`);
                     const initialDivisionName = initialOption ? initialOption.getAttribute('data-name') : '';
-
-                    if (initialDivisionName && initialDivisionName.toLowerCase() === 'admin') {
-                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === 'admin');
+        
+                    if (initialDivisionName && (initialDivisionName.toLowerCase() === 'admin' || initialDivisionName.toLowerCase() === 'bod')) {
+                        let roleName = initialDivisionName.toLowerCase();
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() === roleName);
                         if (this.filteredRoles.length > 0) {
                             this.selectedRoleId = this.filteredRoles[0].id;
                         } else {
@@ -71,9 +70,8 @@
                         }
                         this.isRoleLocked = true;
                     } else {
-                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin');
+                        this.filteredRoles = this.allRoles.filter(role => role.name.toLowerCase() !== 'admin' && role.name.toLowerCase() !== 'bod');
                         this.isRoleLocked = false;
-                        // Pastikan selectedRoleId awal masih valid setelah filtering
                         if (this.selectedRoleId && !this.filteredRoles.some(r => r.id == this.selectedRoleId)) {
                             this.selectedRoleId = '';
                         }
@@ -155,6 +153,10 @@
                                 :selected="selectedRoleId == role.id"></option>
                         </template>
                     </select>
+                    <!-- Hidden input agar value tetap terkirim walau select di-disable -->
+                    <template x-if="isRoleLocked">
+                        <input type="hidden" name="role_id" :value="selectedRoleId">
+                    </template>
                     @error('role_id')
                         <div class="text-red-600 mt-1 text-xs">{{ $message }}</div>
                     @enderror

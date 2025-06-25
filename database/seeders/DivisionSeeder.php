@@ -13,6 +13,9 @@ class DivisionSeeder extends Seeder
         Division::insert([
             ['name' => 'Admin', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Finance', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'bod', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'hod', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'manager', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

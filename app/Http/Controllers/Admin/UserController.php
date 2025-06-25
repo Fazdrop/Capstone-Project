@@ -27,13 +27,33 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
             'division_id' => 'required|exists:divisions,id',
             'role_id' => 'required|exists:roles,id',
             'is_active' => 'required|boolean',
         ]);
+
+        // Ambil nama divisi dan role dari database
+        $division = \App\Models\Division::find($validated['division_id']);
+        $role = \App\Models\Role::find($validated['role_id']);
+
+        // Cek konsistensi: jika divisi admin/bod, role harus admin/bod juga
+        if (
+            (strtolower($division->name) === 'admin' && strtolower($role->name) !== 'admin') ||
+            (strtolower($division->name) === 'bod' && strtolower($role->name) !== 'bod')
+        ) {
+            return back()->withErrors(['role_id' => 'Role tidak sesuai dengan divisi yang dipilih.'])->withInput();
+        }
+
+        // Selain admin/bod, role tidak boleh admin/bod
+        if (
+            strtolower($division->name) !== 'admin' && strtolower($division->name) !== 'bod' &&
+            (strtolower($role->name) === 'admin' || strtolower($role->name) === 'bod')
+        ) {
+            return back()->withErrors(['role_id' => 'Role tidak sesuai dengan divisi yang dipilih.'])->withInput();
+        }
 
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
@@ -51,12 +71,31 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'division_id' => 'required|exists:divisions,id',
             'role_id' => 'required|exists:roles,id',
-            'is_active' => 'required|boolean'
+            'is_active' => 'required|boolean',
+            'password' => 'nullable|string|min:6',
         ]);
+
+        $division = \App\Models\Division::find($validated['division_id']);
+        $role = \App\Models\Role::find($validated['role_id']);
+
+        if (
+            (strtolower($division->name) === 'admin' && strtolower($role->name) !== 'admin') ||
+            (strtolower($division->name) === 'bod' && strtolower($role->name) !== 'bod')
+        ) {
+            return back()->withErrors(['role_id' => 'Role tidak sesuai dengan divisi yang dipilih.'])->withInput();
+        }
+
+        if (
+            strtolower($division->name) !== 'admin' && strtolower($division->name) !== 'bod' &&
+            (strtolower($role->name) === 'admin' || strtolower($role->name) === 'bod')
+        ) {
+            return back()->withErrors(['role_id' => 'Role tidak sesuai dengan divisi yang dipilih.'])->withInput();
+        }
+
         // Password optional saat edit
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);

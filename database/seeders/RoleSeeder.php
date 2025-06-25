@@ -18,6 +18,7 @@ class RoleSeeder extends Seeder
             ['name' => 'admin'],
             ['name' => 'hod'],
             ['name' => 'manager'],
+            ['name' => 'bod']
             // Tambah role lain jika perlu
          ]);
     }
