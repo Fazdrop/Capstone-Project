@@ -4,7 +4,14 @@
 @section('menu-info', 'Status Permintaan Karyawan')
 
 @section('content')
-    <div class="w-full max-w-6xl mx-auto mt-10 px-4">
+    <div class="w-full max-w-6xl mx-auto mt-10 px-4" x-data="{ showDeleteModal: false, deleteUrl: '' }">
+        {{-- Memanggil partial modal konfirmasi hapus --}}
+        @include('partials.modal.modal-delete', [
+            'title' => 'Konfirmasi Hapus Formulir Permintaan',
+            'description' => 'Apakah Anda yakin ingin menghapus form ini? Tindakan ini tidak bisa dibatalkan.',
+            'buttonLabel' => 'Hapus',
+        ])
+
         {{-- Header Halaman --}}
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-green-800 flex items-center gap-3">
@@ -141,23 +148,19 @@
                                                 class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md shadow-sm transition text-xs">
                                                 <i data-feather="edit-3" class="w-4 h-4 mr-1"></i>Edit
                                             </a>
-                                            <form action="{{ route('hod.request_employee.destroy', $req->id) }}"
-                                                method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')"
-                                                class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm transition text-xs">
-                                                    <i data-feather="trash-2" class="w-4 h-4 mr-1"></i>Hapus
-                                                </button>
-                                            </form>
+                                            {{-- Ubah form hapus menjadi tombol yang mengaktifkan modal --}}
+                                            <button type="button"
+                                                @click="showDeleteModal = true; deleteUrl = '{{ route('hod.request_employee.destroy', $req->id) }}'"
+                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm transition text-xs">
+                                                <i data-feather="trash-2" class="w-4 h-4 mr-1"></i>Hapus
+                                            </button>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-8 text-gray-500 text-lg">
+                                <td colspan="10" class="text-center py-8 text-gray-500 text-lg">
                                     <i data-feather="info" class="w-6 h-6 inline-block mb-2 text-gray-400"></i>
                                     <p>Belum ada permintaan karyawan.</p>
                                 </td>

@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\JobVacancyController as StaffJobVacancyController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
-use App\Http\Controllers\Public\ApplicantController;
+use App\Http\Controllers\Staff\ApplicantController;
 use App\Http\Controllers\Public\JobVacancyController as PublicJobVacancyController;
 
 
@@ -99,6 +99,10 @@ Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->grou
 
     // Resource untuk post job vacancy (CRUD lowongan oleh staff HR)
     Route::resource('job_vacancy', StaffJobVacancyController::class)->names('job_vacancy');
+
+    // Route untuk manajemen pelamar
+    Route::resource('applicants', ApplicantController::class);
+    Route::get('applicants-export', [ApplicantController::class, 'export'])->name('applicants.export');
 });
 
 
@@ -113,7 +117,6 @@ Route::get('/force-logout', function () {
     \Illuminate\Support\Facades\Auth::logout();
     return redirect('/login');
 });
-
 
 // ======================
 // (TAMBAHAN: HRD, BOD, dll, jika perlu, tinggal copy pola di atas)
